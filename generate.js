@@ -1,4 +1,3 @@
-var fs = require('fs');
 var path = require('path');
 var defaultWordList = require('./xkpasswd-words.json');
 
@@ -54,57 +53,6 @@ var h = {
     rtn.wordList = opts.wordList;
 
     return rtn;
-  },
-
-  // this needs to support the following options:
-  // 1) "words.json"
-  // 2) "words.txt"
-  // 3) "orange,banana, fizz, buzz" (string of comma-separated words)
-  readCustomWordList: function readCustomWordList(input) {
-    var data;
-    var rtn = [];
-
-    if (Array.isArray(input)) {
-      data = input;
-    }
-
-    // parse string input
-    if (typeof input === 'string') {
-      var tmpWordList = input.split(',');
-
-      if (tmpWordList.length === 1) {
-        var targetFile = path.resolve(tmpWordList[0]);
-
-        if (targetFile.indexOf('.json') === targetFile.length - 5) {
-          // eslint-disable-next-line
-          data = require(targetFile);
-        }
-
-        if (targetFile.indexOf('.txt') === targetFile.length - 4) {
-          var fileContents = fs.readFileSync(targetFile).toString();
-          data = fileContents.split('\n');
-        }
-      }
-
-      if (!data) {
-        data = tmpWordList;
-      }
-    }
-
-    // if there's no data return false
-    if (!data) {
-      return false;
-    }
-
-    // remove empty
-    for (var i = 0; i < data.length; i++) {
-      var word = typeof data[i] === 'string' ? data[i].trim() : '';
-      if (word.length) {
-        rtn.push(word);
-      }
-    }
-
-    return rtn;
   }
 };
 
@@ -115,12 +63,6 @@ module.exports = function main(opts) {
   var password = [];
 
   var wordList = defaultWordList;
-
-  var customWordList = h.readCustomWordList(o.wordList);
-
-  if (Array.isArray(customWordList) && customWordList.length) {
-    wordList = customWordList;
-  }
 
   pattern.forEach(function generatePasswordSegment(type) {
     var value;
